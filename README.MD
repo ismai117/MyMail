@@ -9,7 +9,7 @@ A Kotlin Multiplatform Application for seamless Email and SMS messaging, using t
 - Desktop
 - Web
 
-<h2 align="center">Android</>
+<h2 align="center">Android</></br>
 
 <p align="center">
   <img src="readme_images/android/Email_Screen_Light_Mode.png" height="500px">
@@ -18,7 +18,7 @@ A Kotlin Multiplatform Application for seamless Email and SMS messaging, using t
   <img src="readme_images/android/SMS_Screen_Dark_Mode.png" height="500px">
 </p>
  
-<h2 align="center">Ios</>
+<h2 align="center">Ios</></br>
 
 <p align="center">
   <img src="readme_images/ios/Email_Screen_Light_Mode.png" height="500px">
@@ -27,7 +27,7 @@ A Kotlin Multiplatform Application for seamless Email and SMS messaging, using t
   <img src="readme_images/ios/SMS_Screen_Dark_Mode.png" height="500px">
 </p>
 
-<h2 align="center">Desktop</>
+<h2 align="center">Desktop</></br>
 
 <p align="center">
   <img src="readme_images/desktop/Email_Screen_Light_Mode.png" height="500px">
@@ -36,7 +36,7 @@ A Kotlin Multiplatform Application for seamless Email and SMS messaging, using t
   <img src="readme_images/desktop/SMS_Screen_Dark_Mode.png" height="500px">
 </p>
 
-<h2 align="center">Web</> 
+<h2 align="center">Web</></br>
 
 <p align="center">
   <img src="readme_images/web/Email_Screen_Light_Mode.png" height="500px">
