@@ -1,4 +1,4 @@
-package org.ncgroup.mymail.validation
+package org.ncgroup.mymail.utils.validation
 
 
 data class ValidationResult(

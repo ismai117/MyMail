@@ -1,6 +1,6 @@
-package org.ncgroup.mymail.validation.email
+package org.ncgroup.mymail.utils.validation.email
 
-import org.ncgroup.mymail.validation.ValidationResult
+import org.ncgroup.mymail.utils.validation.ValidationResult
 
 class ValidateContent {
     operator fun invoke(content: String): ValidationResult {

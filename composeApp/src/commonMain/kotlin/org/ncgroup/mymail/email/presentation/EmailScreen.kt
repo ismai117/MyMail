@@ -3,8 +3,8 @@ package org.ncgroup.mymail.email.presentation
 
 import KottieAnimation
 import MyMail.composeApp.BuildConfig
-import ProgressBar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -28,17 +31,18 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import animateKottieCompositionAsState.animateKottieCompositionAsState
 import dev.icerock.moko.mvvm.compose.getViewModel
@@ -47,9 +51,14 @@ import kottieComposition.KottieCompositionSpec
 import kottieComposition.rememberKottieComposition
 import org.ncgroup.mymail.email.di.EmailModule
 import moe.tlaster.precompose.navigation.Navigator
+import org.ncgroup.mymail.sharedComponents.BottomBar
+import org.ncgroup.mymail.sharedComponents.ProgressBar
+import org.ncgroup.mymail.sharedComponents.TopBar
 
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalComposeUiApi::class
+)
 @Composable
 fun EmailScreen(
     modifier: Modifier = Modifier,
@@ -77,13 +86,22 @@ fun EmailScreen(
         isPlaying = emailState.status
     )
 
+    val (recipientRequester, subjectRequester, contentRequester) = FocusRequester.createRefs()
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(Unit){
+        recipientRequester.requestFocus()
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {},
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+            TopBar(
+                title = ""
+            )
+        },
+        bottomBar = {
+            BottomBar(
+                navigator = navigator
             )
         },
         floatingActionButton = {
@@ -162,7 +180,8 @@ fun EmailScreen(
 
                         Divider(
                             modifier = modifier.fillMaxWidth(),
-                            thickness = 3.dp
+                            thickness = 3.dp,
+                            color =  DividerDefaults.color
                         )
 
                         Row(
@@ -202,7 +221,8 @@ fun EmailScreen(
                                         emailViewModel.onEvent(EmailEvent.RECIPIENT(it))
                                     },
                                     modifier = modifier
-                                        .fillMaxWidth(),
+                                        .fillMaxWidth()
+                                        .focusRequester(recipientRequester),
                                     trailingIcon = {
                                         IconButton(
                                             onClick = {
@@ -219,6 +239,13 @@ fun EmailScreen(
                                         }
                                     },
                                     isError = emailState.recipientsError.isNotBlank(),
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Email,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        focusManager.clearFocus()
+                                    }),
                                     colors = TextFieldDefaults.colors(
                                         focusedIndicatorColor = Color.Transparent,
                                         unfocusedIndicatorColor = Color.Transparent
@@ -227,7 +254,8 @@ fun EmailScreen(
 
                                 FlowRow(
                                     modifier = modifier
-                                        .fillMaxWidth()
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     emailViewModel.recipients
                                         .forEach {
@@ -257,17 +285,25 @@ fun EmailScreen(
                         onValueChange = {
                             emailViewModel.onEvent(EmailEvent.SUBJECT(it))
                         },
-                        modifier = modifier.fillMaxWidth(),
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .focusRequester(subjectRequester),
                         placeholder = {
                             Text(
                                 text = "Subject"
                             )
                         },
+                        isError = emailState.subjectError.isNotBlank(),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            focusManager.clearFocus()
+                        }),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
-                        ),
-                        isError = emailState.subjectError.isNotBlank()
+                        )
                     )
 
                     Divider(
@@ -282,17 +318,24 @@ fun EmailScreen(
                         },
                         modifier = modifier
                             .fillMaxWidth()
-                            .weight(1f),
+                            .weight(1f)
+                            .focusRequester(contentRequester),
                         placeholder = {
                             Text(
                                 text = "Content"
                             )
                         },
+                        isError = emailState.recipientsError.isNotBlank(),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            focusManager.clearFocus()
+                        }),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
-                        ),
-                        isError = emailState.recipientsError.isNotBlank()
+                        )
                     )
 
 

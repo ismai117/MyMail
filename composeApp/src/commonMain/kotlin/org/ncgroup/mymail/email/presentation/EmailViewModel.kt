@@ -1,6 +1,6 @@
 package org.ncgroup.mymail.email.presentation
 
-import ResultState
+import org.ncgroup.mymail.utils.ResultState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,10 +8,11 @@ import androidx.compose.runtime.setValue
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.launch
 import email.service.Recipient
+import kotlinx.coroutines.Dispatchers
 import org.ncgroup.mymail.email.domain.repository.EmailRepository
-import org.ncgroup.mymail.validation.email.ValidateContent
-import org.ncgroup.mymail.validation.email.ValidateRecipientEmail
-import org.ncgroup.mymail.validation.email.ValidateSubject
+import org.ncgroup.mymail.utils.validation.email.ValidateContent
+import org.ncgroup.mymail.utils.validation.email.ValidateRecipientEmail
+import org.ncgroup.mymail.utils.validation.email.ValidateSubject
 
 
 class EmailViewModel(
@@ -67,7 +68,7 @@ class EmailViewModel(
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             emailRepository.sendEmail(
                 recipients = recipients.map { Recipient(email = it) },
                 subject = state.subject,

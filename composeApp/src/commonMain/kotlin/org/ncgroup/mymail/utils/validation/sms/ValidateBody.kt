@@ -1,6 +1,6 @@
 package validation.sms
 
-import org.ncgroup.mymail.validation.ValidationResult
+import org.ncgroup.mymail.utils.validation.ValidationResult
 
 class ValidateBody {
     operator fun invoke(body: String): ValidationResult {

@@ -1,5 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.internal.utils.localPropertiesFile
 import org.jetbrains.kotlin.konan.properties.loadProperties
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -35,6 +37,7 @@ kotlin {
         }
     }
 
+
     sourceSets {
 
         all {
@@ -53,9 +56,10 @@ kotlin {
             implementation(libs.napier)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.moko.mvvm)
+            implementation(libs.precompose.navigation)
             implementation(libs.kottie)
             implementation(libs.ksend)
-            api(libs.precompose.navigation)
+            api(libs.generativeai)
         }
 
         commonTest.dependencies {
@@ -127,11 +131,14 @@ compose.experimental {
     web.application {}
 }
 
+val properties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
+}
 
 buildConfig {
-    buildConfigField(type = "String", name = "API_KEY", value = "\"${loadProperties("local.properties").getProperty("API_KEY")}\"")
-    buildConfigField(type = "String", name = "ACCOUNTSID", value =  "\"${loadProperties("local.properties").getProperty("ACCOUNTSID")}\"")
-    buildConfigField(type = "String", name = "AUTHTOKEN", value =  "\"${loadProperties("local.properties").getProperty("AUTHTOKEN")}\"")
-    buildConfigField(type = "String", name = "SENDER_EMAIL_ADDRESS", value =  "\"${loadProperties("local.properties").getProperty("SENDER_EMAIL_ADDRESS")}\"")
-    buildConfigField(type = "String", name = "SENDER_PHONE_NUMBER", value =  "\"${loadProperties("local.properties").getProperty("SENDER_PHONE_NUMBER")}\"")
+    buildConfigField(type = "String", name = "API_KEY", value = "\"${properties.getProperty("API_KEY")}\"")
+    buildConfigField(type = "String", name = "ACCOUNTSID", value = "\"${properties.getProperty("ACCOUNTSID")}\"")
+    buildConfigField(type = "String", name = "AUTHTOKEN", value =  "\"${properties.getProperty("AUTHTOKEN")}\"")
+    buildConfigField(type = "String", name = "SENDER_EMAIL_ADDRESS", value =  "\"${properties.getProperty("SENDER_EMAIL_ADDRESS")}\"")
+    buildConfigField(type = "String", name = "SENDER_PHONE_NUMBER", value =  "\"${properties.getProperty("SENDER_PHONE_NUMBER")}\"")
 }

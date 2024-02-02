@@ -1,6 +1,6 @@
 package validation.sms
 
-import org.ncgroup.mymail.validation.ValidationResult
+import org.ncgroup.mymail.utils.validation.ValidationResult
 class ValidateRecipientPhoneNumber {
     operator fun invoke(phoneNumber: String): ValidationResult {
         if (phoneNumber.isEmpty()){

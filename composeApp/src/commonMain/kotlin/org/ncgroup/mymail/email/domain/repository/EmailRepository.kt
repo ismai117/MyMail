@@ -1,6 +1,6 @@
 package org.ncgroup.mymail.email.domain.repository
 
-import ResultState
+import org.ncgroup.mymail.utils.ResultState
 import kotlinx.coroutines.flow.Flow
 import email.service.Recipient
 

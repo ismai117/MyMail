@@ -1,4 +1,4 @@
-
+package org.ncgroup.mymail.utils
 
 
 sealed class ResultState<T>(

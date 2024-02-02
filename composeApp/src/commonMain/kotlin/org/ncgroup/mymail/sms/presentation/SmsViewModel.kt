@@ -1,10 +1,11 @@
 package org.ncgroup.mymail.sms.presentation
 
-import ResultState
+import org.ncgroup.mymail.utils.ResultState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.ncgroup.mymail.sms.domain.SmsRepository
 import validation.sms.ValidateBody
@@ -52,7 +53,7 @@ class SmsViewModel(
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             smsRepository.sendSMS(
                 recipient = state.recipient,
                 body = state.body

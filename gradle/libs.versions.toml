@@ -7,7 +7,6 @@ compose-plugin = "1.5.12"
 androidx-appcompat = "1.6.1"
 androidx-activityCompose = "1.8.2"
 androidx-core-ktx = "1.12.0"
-material3 = "1.1.2"
 napier = "2.7.1"
 buildConfig = "4.1.1"
 kotlinx-coroutines = "1.7.3"
@@ -15,6 +14,7 @@ moko-mvvm = "0.16.1"
 precompose = "1.5.10"
 kottie = "1.4.1"
 ksend = "1.0.2"
+generativeai = "0.1.2-0.0.1"
 
 [libraries]
 
@@ -32,6 +32,7 @@ moko-mvvm = { module = "dev.icerock.moko:mvvm-compose", version.ref = "moko-mvvm
 precompose-navigation = { module = "moe.tlaster:precompose", version.ref = "precompose" }
 kottie = { module = "io.github.ismai117:kottie", version.ref = "kottie" }
 ksend = { module = "io.github.ismai117:KSend", version.ref = "ksend" }
+generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google", version.ref = "generativeai" }
 
 [plugins]
 

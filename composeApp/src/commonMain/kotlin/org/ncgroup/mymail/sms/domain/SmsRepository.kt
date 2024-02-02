@@ -1,6 +1,6 @@
 package org.ncgroup.mymail.sms.domain
 
-import ResultState
+import org.ncgroup.mymail.utils.ResultState
 import kotlinx.coroutines.flow.Flow
 
 
