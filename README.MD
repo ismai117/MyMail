@@ -2,15 +2,15 @@
 
 A Kotlin Multiplatform Application for seamless Email and SMS messaging, using the KSend library I built which utilises SendGrid/Twilio API's.
 
-</br>
+<br>
 # Platforms 
 
 - Android 
 - Ios 
 - Desktop
 - Web
-
 </br>
+
 ## Android 
 
 <img src="readme_images/android/Email_Screen_Light_Mode.png" height="500px"> <img src="readme_images/android/Email_Screen_Dark_Mode.png" height="500px"> <img src="readme_images/android/SMS_Screen_Light_Mode.png" height="500px"> <img src="readme_images/android/SMS_Screen_Dark_Mode.png" height="500px">
