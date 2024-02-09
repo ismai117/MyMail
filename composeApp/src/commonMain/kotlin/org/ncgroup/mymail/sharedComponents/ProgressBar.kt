@@ -4,15 +4,14 @@ import KottieAnimation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import animateKottieCompositionAsState.animateKottieCompositionAsState
-import kottieComposition.KottieCompositionSpec
-import kottieComposition.rememberKottieComposition
-import utils.KottieConstants
+import animateKottieCompositionAsState
+import rememberKottieComposition
 
 
 @Composable
@@ -42,6 +41,7 @@ fun ProgressBar(
                 progress = { animationState.progress },
                 modifier = Modifier
                     .size(200.dp),
+                backgroundColor = MaterialTheme.colorScheme.surfaceVariant
             )
 
         }

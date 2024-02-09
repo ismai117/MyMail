@@ -17,7 +17,7 @@ import org.ncgroup.mymail.utils.validation.email.ValidateSubject
 
 class EmailViewModel(
     private val emailRepository: EmailRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val validateRecipientEmail = ValidateRecipientEmail()
     private val validateSubject = ValidateSubject()
@@ -41,8 +41,16 @@ class EmailViewModel(
                 state = state.copy(content = event.content)
             }
 
-            EmailEvent.SUBMIT -> {
+            is EmailEvent.SUBMIT -> {
                 sendEmail()
+            }
+
+            is EmailEvent.CLEAR_ERROR_MESSAGES -> {
+                clearErrorMessages()
+            }
+
+            is EmailEvent.RESET_UI_STATE -> {
+                resetUIState()
             }
         }
     }
@@ -96,8 +104,6 @@ class EmailViewModel(
                             error = state.error
                         )
                     }
-
-                    else -> {}
                 }
             }
         }
@@ -109,7 +115,7 @@ class EmailViewModel(
         }
     }
 
-    fun clear() {
+    private fun resetUIState() {
         state = state.copy(
             status = false,
             recipient = "",
@@ -117,6 +123,14 @@ class EmailViewModel(
             content = ""
         )
         recipients.clear()
+    }
+
+    private fun clearErrorMessages() {
+        state = state.copy(
+            recipientsError = "",
+            subjectError = "",
+            contentError = ""
+        )
     }
 
 }

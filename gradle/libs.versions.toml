@@ -2,7 +2,7 @@
 
 agp = "8.2.2"
 kotlin = "1.9.22"
-compose = "1.6.0"
+compose = "1.6.1"
 compose-plugin = "1.5.12"
 androidx-appcompat = "1.6.1"
 androidx-activityCompose = "1.8.2"
@@ -12,7 +12,7 @@ buildConfig = "4.1.1"
 kotlinx-coroutines = "1.7.3"
 moko-mvvm = "0.16.1"
 precompose = "1.5.10"
-kottie = "1.4.1"
+kottie = "1.4.3"
 ksend = "1.0.2"
 generativeai = "0.1.2-0.0.1"
 
@@ -37,6 +37,7 @@ generativeai = { module = "dev.shreyaspatil.generativeai:generativeai-google", v
 [plugins]
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }

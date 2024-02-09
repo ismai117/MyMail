@@ -29,8 +29,14 @@ class SmsViewModel(
             is SmsEvent.BODY -> {
                 state = state.copy(body = event.body)
             }
-            SmsEvent.SUBMIT -> {
+            is SmsEvent.SUBMIT -> {
                 sendSms()
+            }
+            is SmsEvent.CLEAR_ERROR_MESSAGES -> {
+                clearErrorMessages()
+            }
+            is SmsEvent.RESET_UI_STATE -> {
+                resetUIState()
             }
         }
     }
@@ -80,15 +86,13 @@ class SmsViewModel(
                             error = result.message
                         )
                     }
-
-                    else -> {}
                 }
             }
         }
 
     }
 
-    fun clear(){
+    private fun resetUIState() {
         state = state.copy(
             status = false,
             recipient = "",
@@ -96,5 +100,11 @@ class SmsViewModel(
         )
     }
 
+    private fun clearErrorMessages() {
+        state = state.copy(
+            recipientError = "",
+            bodyError = ""
+        )
+    }
 
 }

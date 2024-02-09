@@ -5,6 +5,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.multiplatform)
+    alias(libs.plugins.kotlinCocoapods)
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
     alias(libs.plugins.buildConfig)
@@ -26,17 +27,25 @@ kotlin {
         binaries.executable()
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    cocoapods {
+        summary = "Some description for the Shared Module"
+        homepage = "Link to the Shared Module homepage"
+        version = "1.0"
+        ios.deploymentTarget = "17.0"
+        framework {
             baseName = "ComposeApp"
             isStatic = true
         }
+        pod("lottie-ios") {
+            version = "4.4.0"
+            moduleName = "Lottie"
+            extraOpts += listOf("-compiler-option", "-fmodules")
+        }
     }
-
 
     sourceSets {
 
@@ -136,9 +145,34 @@ val properties = Properties().apply {
 }
 
 buildConfig {
-    buildConfigField(type = "String", name = "API_KEY", value = "\"${properties.getProperty("API_KEY")}\"")
-    buildConfigField(type = "String", name = "ACCOUNTSID", value = "\"${properties.getProperty("ACCOUNTSID")}\"")
-    buildConfigField(type = "String", name = "AUTHTOKEN", value =  "\"${properties.getProperty("AUTHTOKEN")}\"")
-    buildConfigField(type = "String", name = "SENDER_EMAIL_ADDRESS", value =  "\"${properties.getProperty("SENDER_EMAIL_ADDRESS")}\"")
-    buildConfigField(type = "String", name = "SENDER_PHONE_NUMBER", value =  "\"${properties.getProperty("SENDER_PHONE_NUMBER")}\"")
+    buildConfigField(
+        type = "String",
+        name = "API_KEY",
+        value = "\"${properties.getProperty("API_KEY")}\""
+    )
+    buildConfigField(
+        type = "String",
+        name = "ACCOUNTSID",
+        value = "\"${properties.getProperty("ACCOUNTSID")}\""
+    )
+    buildConfigField(
+        type = "String",
+        name = "AUTHTOKEN",
+        value = "\"${properties.getProperty("AUTHTOKEN")}\""
+    )
+    buildConfigField(
+        type = "String",
+        name = "SENDER_EMAIL_ADDRESS",
+        value = "\"${properties.getProperty("SENDER_EMAIL_ADDRESS")}\""
+    )
+    buildConfigField(
+        type = "String",
+        name = "SENDER_PHONE_NUMBER",
+        value = "\"${properties.getProperty("SENDER_PHONE_NUMBER")}\""
+    )
+    buildConfigField(
+        type = "String",
+        name = "GEMINI_API_KEY",
+        value = "\"${properties.getProperty("GEMINI_API_KEY")}\""
+    )
 }

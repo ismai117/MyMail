@@ -2,6 +2,7 @@ package org.ncgroup.mymail.sms.presentation
 
 
 import KottieAnimation
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,8 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -19,6 +23,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -28,16 +35,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import animateKottieCompositionAsState.animateKottieCompositionAsState
+import animateKottieCompositionAsState
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
-import kottieComposition.KottieCompositionSpec
-import kottieComposition.rememberKottieComposition
 import moe.tlaster.precompose.navigation.Navigator
 import org.ncgroup.mymail.sharedComponents.BottomBar
 import org.ncgroup.mymail.sharedComponents.ProgressBar
 import org.ncgroup.mymail.sharedComponents.TopBar
 import org.ncgroup.mymail.sms.di.SmsModule
+import org.ncgroup.mymail.theme.AppTheme
+import rememberKottieComposition
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -74,10 +81,30 @@ fun SmsScreen(
         recipientRequester.requestFocus()
     }
 
+    var enableErrorMessagePopUp by remember { mutableStateOf(false) }
+
+    LaunchedEffect(
+        smsState.recipientError,
+        smsState.bodyError
+    ) {
+        when {
+            smsState.recipientError.isNotBlank() -> {
+                enableErrorMessagePopUp = true
+            }
+
+            smsState.bodyError.isNotBlank() -> {
+                enableErrorMessagePopUp = true
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopBar(
-                title = ""
+                title = "",
+                enableGemini = {
+
+                }
             )
         },
         bottomBar = {
@@ -176,13 +203,48 @@ fun SmsScreen(
                         composition = composition,
                         progress = { animationState.progress },
                         modifier = modifier
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
 
             }
         }
     )
+
+    if (enableErrorMessagePopUp){
+        AlertDialog(
+            onDismissRequest = {},
+            confirmButton = {
+                Button(
+                    onClick = {
+                        smsViewModel.onEvent(SmsEvent.CLEAR_ERROR_MESSAGES)
+                        enableErrorMessagePopUp = false
+                    }
+                ){
+                    Text(
+                        text = "OK"
+                    )
+                }
+            },
+            text = {
+                when {
+                    smsState.recipientError.isNotBlank() -> {
+                        Text(
+                            text =  smsState.recipientError
+                        )
+                    }
+
+                    smsState.bodyError.isNotBlank() -> {
+                        Text(
+                            text = smsState.bodyError
+                        )
+                    }
+                }
+            }
+        )
+    }
+
 
     LaunchedEffect(
         key1 = animationState.isPlaying
@@ -192,7 +254,7 @@ fun SmsScreen(
         }
         if (animationState.isCompleted) {
             println("Animation Completed")
-            smsViewModel.clear()
+            smsViewModel.onEvent(SmsEvent.RESET_UI_STATE)
         }
     }
 

@@ -19,9 +19,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +35,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -44,27 +48,28 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import animateKottieCompositionAsState.animateKottieCompositionAsState
+import animateKottieCompositionAsState
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
-import kottieComposition.KottieCompositionSpec
-import kottieComposition.rememberKottieComposition
 import org.ncgroup.mymail.email.di.EmailModule
 import moe.tlaster.precompose.navigation.Navigator
 import org.ncgroup.mymail.sharedComponents.BottomBar
 import org.ncgroup.mymail.sharedComponents.ProgressBar
 import org.ncgroup.mymail.sharedComponents.TopBar
+import rememberKottieComposition
 
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalComposeUiApi::class
+// 7599946274
+
+@OptIn(
+    ExperimentalLayoutApi::class,
+    ExperimentalComposeUiApi::class,
 )
 @Composable
 fun EmailScreen(
     modifier: Modifier = Modifier,
     navigator: Navigator
 ) {
-
 
     val emailViewModel: EmailViewModel = getViewModel(
         key = "email_app_screen",
@@ -89,14 +94,39 @@ fun EmailScreen(
     val (recipientRequester, subjectRequester, contentRequester) = FocusRequester.createRefs()
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         recipientRequester.requestFocus()
+    }
+
+    var enableErrorMessagePopUp by remember { mutableStateOf(false) }
+
+    LaunchedEffect(
+        emailState.recipientsError,
+        emailState.subjectError,
+        emailState.contentError
+    ) {
+        when {
+            emailState.recipientsError.isNotBlank() -> {
+                enableErrorMessagePopUp = true
+            }
+
+            emailState.subjectError.isNotBlank() -> {
+                enableErrorMessagePopUp = true
+            }
+
+            emailState.contentError.isNotBlank() -> {
+                enableErrorMessagePopUp = true
+            }
+        }
     }
 
     Scaffold(
         topBar = {
             TopBar(
-                title = ""
+                title = "",
+                enableGemini = {
+//                    geminiEnabled = true
+                }
             )
         },
         bottomBar = {
@@ -181,7 +211,7 @@ fun EmailScreen(
                         Divider(
                             modifier = modifier.fillMaxWidth(),
                             thickness = 3.dp,
-                            color =  DividerDefaults.color
+                            color = DividerDefaults.color
                         )
 
                         Row(
@@ -238,7 +268,6 @@ fun EmailScreen(
                                             )
                                         }
                                     },
-                                    isError = emailState.recipientsError.isNotBlank(),
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Email,
                                         imeAction = ImeAction.Done
@@ -293,7 +322,6 @@ fun EmailScreen(
                                 text = "Subject"
                             )
                         },
-                        isError = emailState.subjectError.isNotBlank(),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
                         ),
@@ -325,7 +353,6 @@ fun EmailScreen(
                                 text = "Content"
                             )
                         },
-                        isError = emailState.recipientsError.isNotBlank(),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
                         ),
@@ -349,12 +376,52 @@ fun EmailScreen(
                         progress = { animationState.progress },
                         modifier = modifier
                             .fillMaxSize(),
+                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
 
             }
         }
     )
+
+    if (enableErrorMessagePopUp){
+        AlertDialog(
+            onDismissRequest = {},
+            confirmButton = {
+               Button(
+                   onClick = {
+                       emailViewModel.onEvent(EmailEvent.CLEAR_ERROR_MESSAGES)
+                       enableErrorMessagePopUp = false
+                   }
+               ){
+                   Text(
+                       text = "OK"
+                   )
+               }
+            },
+            text = {
+                when {
+                    emailState.recipientsError.isNotBlank() -> {
+                        Text(
+                            text = emailState.recipientsError
+                        )
+                    }
+
+                    emailState.subjectError.isNotBlank() -> {
+                        Text(
+                            text = emailState.subjectError
+                        )
+                    }
+
+                    emailState.contentError.isNotBlank() -> {
+                        Text(
+                            text = emailState.contentError
+                        )
+                    }
+                }
+            }
+        )
+    }
 
     LaunchedEffect(
         key1 = animationState.isPlaying
@@ -364,9 +431,41 @@ fun EmailScreen(
         }
         if (animationState.isCompleted) {
             println("Animation Completed")
-            emailViewModel.clear()
+            emailViewModel.onEvent(EmailEvent.RESET_UI_STATE)
         }
     }
 
 }
 
+
+/**
+ * Generate an email template with the following content:
+ *
+ * Subject: [Subject]
+ *
+ * Dear [Recipient Name],
+ *
+ * [Content]
+ *
+ * Best regards,
+ *
+ * [Your Name]
+ */
+
+fun generate(
+    prompt: String,
+    recipientName: String,
+    fullName: String
+): String {
+    return """
+        $prompt
+        
+        Dear [$recipientName],
+        
+        [Content]
+        
+        Best regards,
+        
+        [$fullName]
+    """.trimIndent()
+}
