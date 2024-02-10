@@ -12,17 +12,21 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,14 +49,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import animateKottieCompositionAsState
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
+import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
+import dev.shreyaspatil.ai.client.generativeai.type.content
 import org.ncgroup.mymail.email.di.EmailModule
 import moe.tlaster.precompose.navigation.Navigator
+import org.ncgroup.mymail.gemini.GeminiEvent
+import org.ncgroup.mymail.gemini.GeminiViewModel
 import org.ncgroup.mymail.sharedComponents.BottomBar
 import org.ncgroup.mymail.sharedComponents.ProgressBar
 import org.ncgroup.mymail.sharedComponents.TopBar
@@ -63,7 +73,7 @@ import rememberKottieComposition
 
 @OptIn(
     ExperimentalLayoutApi::class,
-    ExperimentalComposeUiApi::class,
+    ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
 )
 @Composable
 fun EmailScreen(
@@ -79,6 +89,15 @@ fun EmailScreen(
     )
 
     val emailState = emailViewModel.state
+
+    val geminiViewModel: GeminiViewModel = getViewModel(
+        key = "email_app_screen_gemini",
+        factory = viewModelFactory {
+            GeminiViewModel()
+        }
+    )
+
+    val geminiState = geminiViewModel.state
 
     val composition = rememberKottieComposition(
         spec = KottieCompositionSpec.Url("https://lottie.host/dd09ef53-b150-4c81-a3e1-b5516e940c31/GY604Ofcp4.json")
@@ -120,12 +139,28 @@ fun EmailScreen(
         }
     }
 
+    var geminiEnabled by remember { mutableStateOf(false) }
+
+    LaunchedEffect(geminiState.status){
+        if (geminiState.status){
+            println("success")
+            geminiEnabled = false
+            emailViewModel.onEvent(EmailEvent.CONTENT(geminiState.response))
+        }
+    }
+
+    LaunchedEffect(geminiState.isLoading){
+        if (geminiState.isLoading){
+            geminiEnabled = false
+        }
+    }
+
     Scaffold(
         topBar = {
             TopBar(
                 title = "",
                 enableGemini = {
-//                    geminiEnabled = true
+                    geminiEnabled = true
                 }
             )
         },
@@ -368,6 +403,12 @@ fun EmailScreen(
 
                 }
 
+                if (geminiState.isLoading){
+                    CircularProgressIndicator(
+                        modifier = modifier.align(Alignment.Center)
+                    )
+                }
+
                 ProgressBar(isLoading = emailState.isLoading)
 
                 if (emailState.status) {
@@ -383,6 +424,64 @@ fun EmailScreen(
             }
         }
     )
+
+    if (geminiEnabled){
+       Box(
+           modifier = modifier
+               .wrapContentSize()
+       ) {
+           AlertDialog(
+               onDismissRequest = {
+                   geminiEnabled = false
+               },
+               title = {
+                   Text(
+                       text = "Generate Email Template",
+                       fontSize = 14.sp
+                   )
+               },
+               text = {
+                   TextField(
+                       value = geminiState.prompt,
+                       onValueChange = {
+                           geminiViewModel.onEvent(
+                               GeminiEvent.PROMPT(it)
+                           )
+                       },
+                       textStyle = TextStyle(
+                           fontSize = 15.sp
+                       )
+                   )
+               },
+               dismissButton = {
+                   Button(
+                       onClick = {
+                           geminiEnabled = false
+                       }
+                   ){
+                       Text(
+                           text = "Cancel",
+                           fontSize = 12.sp
+                       )
+                   }
+               },
+               confirmButton = {
+                   Button(
+                       onClick = {
+                           geminiViewModel.onEvent(
+                               GeminiEvent.SUBMIT
+                           )
+                       }
+                   ){
+                       Text(
+                           text = "Generate",
+                           fontSize = 12.sp
+                       )
+                   }
+               }
+           )
+       }
+    }
 
     if (enableErrorMessagePopUp){
         AlertDialog(
@@ -437,35 +536,3 @@ fun EmailScreen(
 
 }
 
-
-/**
- * Generate an email template with the following content:
- *
- * Subject: [Subject]
- *
- * Dear [Recipient Name],
- *
- * [Content]
- *
- * Best regards,
- *
- * [Your Name]
- */
-
-fun generate(
-    prompt: String,
-    recipientName: String,
-    fullName: String
-): String {
-    return """
-        $prompt
-        
-        Dear [$recipientName],
-        
-        [Content]
-        
-        Best regards,
-        
-        [$fullName]
-    """.trimIndent()
-}
