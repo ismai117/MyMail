@@ -26,7 +26,7 @@ GEMINI_API_KEY=
 ```
 </br>
 
-To utilize the functionalities of this library for sending emails and SMS using SendGrid APIs, please follow these steps:
+To utilise the functionalities of this application for sending emails and SMS using SendGrid APIs, please follow these steps:
 
 - Sign up for SendGrid: Head over to SendGrid's website and sign up for an account to obtain your API key. Once signed up, copy your API key and paste it into the API_KEY placeholder in the local.properties file.
 - Configure Sender Email Address: Set your sender email address in the SENDER_EMAIL_ADDRESS placeholder in the local.properties file.
