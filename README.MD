@@ -31,7 +31,7 @@ To utilise the functionalities of this application for sending emails and SMS us
 - Configure Sender Email Address: Set your sender email address in the SENDER_EMAIL_ADDRESS placeholder in the local.properties file.
 - Sign up for Twilio: Similarly, visit Twilio's website and sign up for an account to acquire your Account SID, Auth Token, and Sender Phone Number for SMS functionalities. Copy these credentials and paste them into the ACCOUNTSID, AUTHTOKEN, and SENDER_PHONE_NUMBER placeholders respectively in the local.properties file.
 
-After completing these steps, you'll be ready to seamlessly send emails and SMS using the provided library, leveraging SendGrid for email functionality and Twilio for SMS.
+After completing these steps, you'll be ready to seamlessly send emails and SMS.
 
 </br>
 
