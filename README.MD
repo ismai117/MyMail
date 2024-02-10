@@ -10,6 +10,20 @@ A Kotlin Multiplatform Application for seamless Email and SMS messaging, using t
 - Web
 </br>
 
+# Setup 
+
+In local.properties file add the following Placeholders
+
+```
+API_KEY=
+ACCOUNTSID=
+AUTHTOKEN=
+
+SENDER_EMAIL_ADDRESS=
+SENDER_PHONE_NUMBER=
+
+GEMINI_API_KEY=
+```
 
 <pre>
 <h2 align="center">Android</h2>
