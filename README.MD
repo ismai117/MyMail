@@ -33,6 +33,8 @@ To utilise the functionalities of this application for sending emails and SMS us
 
 After completing these steps, you'll be ready to seamlessly send emails and SMS using the provided library, leveraging SendGrid for email functionality and Twilio for SMS.
 
+</br>
+
 <pre>
 <h2 align="center">Android</h2>
 </pre>
