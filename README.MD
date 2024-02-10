@@ -12,7 +12,7 @@ A Kotlin Multiplatform Application for seamless Email and SMS messaging, using t
 
 # Setup
 
-In local.properties file add the following Placeholders
+In local.properties file add the following placeholders
 
 ```
 API_KEY=
