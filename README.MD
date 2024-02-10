@@ -1,4 +1,4 @@
-<h1>MyMail</h1></br>
+<h1>VerseReach</h1></br>
 
 A Kotlin Multiplatform Application for seamless Email and SMS messaging, using the KSend library I built which utilises SendGrid/Twilio API's.
 
