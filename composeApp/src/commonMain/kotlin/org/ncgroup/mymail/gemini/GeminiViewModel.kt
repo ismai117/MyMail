@@ -1,6 +1,6 @@
 package org.ncgroup.mymail.gemini
 
-import MyMail.composeApp.BuildConfig
+import VerseReach.composeApp.BuildConfig
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue

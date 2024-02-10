@@ -1,7 +1,7 @@
 package org.ncgroup.mymail.email.data.repository
 
 
-import MyMail.composeApp.BuildConfig
+import VerseReach.composeApp.BuildConfig
 import org.ncgroup.mymail.utils.ResultState
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

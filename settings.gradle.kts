@@ -1,4 +1,4 @@
-rootProject.name = "MyMail"
+rootProject.name = "VerseReach"
 include(":composeApp")
 
 pluginManagement {
