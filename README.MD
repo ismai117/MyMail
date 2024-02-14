@@ -71,9 +71,9 @@ After completing these steps, you'll be ready to seamlessly send emails and SMS.
 <h2 align="center">Wear OS</h2>
 </pre>
 <p align="center">
-  <img src="readme_images/wearOS/Starter_Screen_Dark_Mode.png">
-  <img src="readme_images/wearOS/Email_Screen_Dark_Mode.png">
-  <img src="readme_images/wearOS/SMS_Screen_Dark_Mode.png">
+  <img src="readme_images/wearOS/Starter_Screen_Dark_Mode.png" width=400 height-400>
+  <img src="readme_images/wearOS/Email_Screen_Dark_Mode.png" width=400 height-400>
+  <img src="readme_images/wearOS/SMS_Screen_Dark_Mode.png" width=400 height-400>
 </p>
 
 
