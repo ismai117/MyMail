@@ -57,14 +57,23 @@ After completing these steps, you'll be ready to seamlessly send emails and SMS.
 <h2 align="center">Desktop</h2>
 </pre>
 <p align="center">
-  <img src="readme_images/desktop/Email_Screen_Dark_Mode.png" height="500px">
+  <img src="readme_images/desktop/Email_Screen_Dark_Mode.png">
 </p>
 
 <pre>
 <h2 align="center">Web</h2>
 </pre>
 <p align="center">
-  <img src="readme_images/web/Email_Screen_Dark_Mode.png" height="500px">
+  <img src="readme_images/web/Email_Screen_Dark_Mode.png">
+</p>
+
+<pre>
+<h2 align="center">Wear OS</h2>
+</pre>
+<p align="center">
+  <img src="readme_images/wearOS/Starter_Screen_Dark_Mode.png">
+  <img src="readme_images/wearOS/Email_Screen_Dark_Mode.png">
+  <img src="readme_images/wearOS/SMS_Screen_Dark_Mode.png">
 </p>
 
 
