@@ -8,6 +8,7 @@ A Kotlin Multiplatform Application for seamless Email and SMS messaging, using t
 - Ios 
 - Desktop
 - Web
+- Wear OS
 </br>
 
 # Setup
