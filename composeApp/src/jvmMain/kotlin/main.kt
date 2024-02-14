@@ -3,11 +3,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import java.awt.Dimension
-import org.ncgroup.mymail.App
+import org.ncgroup.versereach.App
 
 fun main() = application {
     Window(
-        title = "MyMail",
+        title = "VerseReach",
         state = rememberWindowState(width = 800.dp, height = 600.dp),
         onCloseRequest = ::exitApplication,
     ) {

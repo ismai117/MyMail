@@ -1,13 +1,14 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.internal.utils.localPropertiesFile
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.konan.properties.loadProperties
 import java.util.Properties
 
 plugins {
+    alias(libs.plugins.android.application)
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.kotlinCocoapods)
     alias(libs.plugins.compose)
-    alias(libs.plugins.android.application)
     alias(libs.plugins.buildConfig)
 }
 
@@ -24,6 +25,17 @@ kotlin {
 
     js {
         browser()
+        binaries.executable()
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "composeApp"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+            }
+        }
         binaries.executable()
     }
 
@@ -59,12 +71,13 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.napier)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.moko.mvvm)
             implementation(libs.precompose.navigation)
+            implementation(libs.precompose.viewmodel)
             implementation(libs.kottie)
-            implementation(libs.ksend)
-            api(libs.generativeai)
+
+            implementation(project(":common-ksend"))
+            implementation(project(":common-gemini"))
+
         }
 
         commonTest.dependencies {
@@ -95,14 +108,13 @@ kotlin {
 }
 
 android {
-    namespace = "org.ncgroup.mymail"
+    namespace = "org.ncgroup.versereach"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 24
         targetSdk = 34
-
-        applicationId = "org.ncgroup.mymail.androidApp"
+        applicationId = "org.ncgroup.versereach.androidApp"
         versionCode = 1
         versionName = "1.0.0"
     }
@@ -126,7 +138,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.ncgroup.mymail.desktopApp"
+            packageName = "org.ncgroup.versereach.desktopApp"
             packageVersion = "1.0.0"
         }
     }
@@ -143,32 +155,7 @@ val properties = Properties().apply {
 buildConfig {
     buildConfigField(
         type = "String",
-        name = "API_KEY",
-        value = "\"${properties.getProperty("API_KEY")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "ACCOUNTSID",
-        value = "\"${properties.getProperty("ACCOUNTSID")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "AUTHTOKEN",
-        value = "\"${properties.getProperty("AUTHTOKEN")}\""
-    )
-    buildConfigField(
-        type = "String",
         name = "SENDER_EMAIL_ADDRESS",
         value = "\"${properties.getProperty("SENDER_EMAIL_ADDRESS")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "SENDER_PHONE_NUMBER",
-        value = "\"${properties.getProperty("SENDER_PHONE_NUMBER")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "GEMINI_API_KEY",
-        value = "\"${properties.getProperty("GEMINI_API_KEY")}\""
     )
 }
