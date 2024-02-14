@@ -43,14 +43,14 @@ After completing these steps, you'll be ready to seamlessly send emails and SMS.
 <h2 align="center">Android</h2>
 </pre>
 <p align="center">
-  <img src="readme_images/android/Email_Screen_Dark_Mode.png" height="500px">
+  <img src="readme_images/android/Email_Screen_Dark_Mode.png">
 </p>
 
 <pre>
 <h2 align="center">Ios</h2>
 </pre>
 <p align="center">
-  <img src="readme_images/ios/Email_Screen_Dark_Mode.png" height="500px">
+  <img src="readme_images/ios/Email_Screen_Dark_Mode.png">
 </p></br>
 
 <pre>
