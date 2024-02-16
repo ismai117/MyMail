@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.compose)
     alias(libs.plugins.buildConfig)
 }
 
@@ -11,7 +12,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "org.ncgroup.versereach.webApp"
+        applicationId = "org.ncgroup.versereach.wearApp"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
@@ -39,6 +40,8 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
     implementation(libs.compose.uitooling)
+    implementation(compose.material3)
+    implementation(compose.materialIconsExtended)
     implementation(libs.wear.foundation)
     implementation(libs.wear.material)
     implementation(libs.horologist.compose.material)
@@ -48,6 +51,7 @@ dependencies {
     implementation(libs.precompose.viewmodel)
     implementation(libs.kottie)
     implementation(libs.generativeai)
+    implementation(project(":shared"))
     implementation(project(":common-ksend"))
     implementation(project(":common-gemini"))
 }

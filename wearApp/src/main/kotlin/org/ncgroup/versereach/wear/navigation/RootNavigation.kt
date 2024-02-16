@@ -10,9 +10,9 @@ import org.ncgroup.versereach.email.di.EmailModule
 import org.ncgroup.versereach.email.presentation.EmailViewModel
 import org.ncgroup.versereach.sms.di.SmsModule
 import org.ncgroup.versereach.sms.presentation.SmsViewModel
+import org.ncgroup.versereach.splash.SplashScreen
 import org.ncgroup.versereach.wear.email.EmailScreen
 import org.ncgroup.versereach.wear.sms.SmsScreen
-import org.ncgroup.versereach.wear.splash.SplashScreen
 import org.ncgroup.versereach.wear.starter.StarterScreen
 
 
@@ -77,6 +77,10 @@ fun RootNavigation(
                 emailState = emailState,
                 emailEvent = {
                     emailViewModel.onEvent(it)
+                },
+                recipients = emailViewModel.recipients,
+                addRecipient = {
+                    emailViewModel.addRecipient(it)
                 },
                 geminiState = geminiState,
                 geminiEvent = {

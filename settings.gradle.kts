@@ -1,5 +1,9 @@
 rootProject.name = "VerseReach"
-include(":composeApp")
+include(":androidApp")
+include(":shared")
+include(":desktopApp")
+include(":webApp")
+include(":webApp-wasm")
 include(":wearApp")
 include(":common-ksend")
 include(":common-gemini")

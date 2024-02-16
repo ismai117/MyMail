@@ -2,7 +2,7 @@ package org.ncgroup.versereach.wear.sms
 
 import KottieAnimation
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GeneratingTokens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,12 +32,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
@@ -183,13 +189,13 @@ fun SmsScreen(
                                             modifier = modifier
                                                 .padding(top = 8.dp, start = 12.dp)
                                                 .align(Alignment.TopStart)
-                                                .border(width = 1.dp, color = Color.Black)
+//                                                .border(width = 1.dp, color = Color.Black)
                                         )
                                         Box(
                                             modifier = modifier
                                                 .padding(start = 12.dp)
                                                 .align(Alignment.CenterStart)
-                                                .border(width = 1.dp, color = Color.Black)
+//                                                .border(width = 1.dp, color = Color.Black)
                                         ) {
                                             innerField()
                                         }
@@ -203,6 +209,7 @@ fun SmsScreen(
                             .height(56.dp)
                             .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp)),
                         keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         )
                     )
@@ -223,12 +230,32 @@ fun SmsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (smsState.body.isBlank()) {
-                                    Text(
-                                        text = "Body",
-                                        color = Color.DarkGray,
-                                        fontSize = 12.sp,
-                                        modifier = modifier.padding(start = 12.dp)
-                                    )
+                                    Box(
+                                        modifier = modifier
+                                            .fillMaxSize()
+                                    ) {
+                                        Text(
+                                            text = "Body",
+                                            color = Color.DarkGray,
+                                            fontSize = 12.sp,
+                                            modifier = modifier
+                                                .padding(start = 12.dp)
+                                                .align(Alignment.CenterStart)
+                                        )
+                                        Box(
+                                            modifier = modifier
+                                                .padding(end = 12.dp)
+                                                .align(Alignment.CenterEnd)
+                                                .clickable {
+                                                    geminiEnabled = true
+                                                }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.GeneratingTokens,
+                                                contentDescription = "generate body"
+                                            )
+                                        }
+                                    }
                                 } else {
                                     Box(
                                         modifier = modifier
@@ -241,13 +268,11 @@ fun SmsScreen(
                                             modifier = modifier
                                                 .padding(top = 8.dp, start = 12.dp)
                                                 .align(Alignment.TopStart)
-                                                .border(width = 1.dp, color = Color.Black)
                                         )
                                         Box(
                                             modifier = modifier
                                                 .padding(start = 12.dp)
                                                 .align(Alignment.CenterStart)
-                                                .border(width = 1.dp, color = Color.Black)
                                         ) {
                                             innerField()
                                         }
@@ -260,13 +285,16 @@ fun SmsScreen(
                             .height(56.dp)
                             .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp)),
                         keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         )
                     )
 
                     Button(
                         onClick = {
-
+                              smsEvent(
+                                  SmsEvent.SUBMIT
+                              )
                         },
                         modifier = modifier
                             .fillMaxWidth()
@@ -306,13 +334,17 @@ fun SmsScreen(
                 ProgressBar(isLoading = smsState.isLoading)
 
                 if (smsState.status) {
-                    KottieAnimation(
-                        composition = composition,
-                        progress = { animationState.progress },
-                        modifier = modifier
-                            .fillMaxSize(),
-                        backgroundColor = MaterialTheme.colors.onSurfaceVariant
-                    )
+                    Box(
+                        modifier = modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        KottieAnimation(
+                            composition = composition,
+                            progress = { animationState.progress },
+                            modifier = modifier
+                                .size(140.dp)
+                        )
+                    }
                 }
 
             }
@@ -329,7 +361,8 @@ fun SmsScreen(
                 title = {
                     Text(
                         text = "Generate SMS Template",
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center
                     )
                 },
                 negativeButton = {
@@ -417,41 +450,49 @@ fun SmsScreen(
                     when {
                         smsState.recipientError.isBlank() -> {
                             Text(
-                                text = smsState.recipientError
+                                text = smsState.recipientError,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         smsState.bodyError.isNotBlank() -> {
                             Text(
-                                text = smsState.bodyError
+                                text = smsState.bodyError,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         geminiState.promptError.isNotBlank() -> {
                             Text(
-                                text = geminiState.promptError
+                                text = geminiState.promptError,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         geminiState.error.isNotBlank() -> {
                             Text(
-                                text = geminiState.error
+                                text = geminiState.error,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
                 },
                 negativeButton = {
-                    Button(
-                        onClick = {
-                            enableErrorMessagePopUp = false
-                        },
-                        modifier = modifier.width(70.dp)
-                    ) {
-                        Text(
-                            text = "Cancel",
-                            fontSize = 12.sp
-                        )
-                    }
+//                    Button(
+//                        onClick = {
+//                            enableErrorMessagePopUp = false
+//                        },
+//                        modifier = modifier.width(70.dp)
+//                    ) {
+//                        Text(
+//                            text = "Cancel",
+//                            fontSize = 12.sp
+//                        )
+//                    }
                 },
                 positiveButton = {
                     Button(

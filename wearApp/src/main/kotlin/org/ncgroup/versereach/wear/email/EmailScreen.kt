@@ -1,9 +1,11 @@
 package org.ncgroup.versereach.wear.email
 
 import KottieAnimation
+import KottieCompositionSpec
 import VerseReach.wearApp.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +14,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,15 +34,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
@@ -57,14 +69,20 @@ fun EmailScreenPreview() {
         navigator = rememberNavigator(),
         emailState = EmailState(),
         emailEvent = {},
+        recipients = listOf(),
+        addRecipient = {},
         geminiState = GeminiState(),
         geminiEvent = {}
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailScreen(
     modifier: Modifier = Modifier,
     navigator: Navigator,
+    recipients: List<String>,
+    addRecipient: (String) -> Unit,
     emailState: EmailState,
     emailEvent: (EmailEvent) -> Unit,
     geminiState: GeminiState,
@@ -205,39 +223,66 @@ fun EmailScreen(
                             fontSize = 12.sp,
                         ),
                         decorationBox = { innerField ->
-                            Row(
-                                modifier = modifier
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
+                            BadgedBox(
+                                badge = {
+                                    if (recipients.isNotEmpty()){
+                                        Badge {
+                                            Text(text = "${recipients.count()}")
+                                        }
+                                    }
+                                }
                             ) {
-                                if (emailState.recipient.isBlank()) {
-                                    Text(
-                                        text = "Recipient",
-                                        color = Color.DarkGray,
-                                        fontSize = 12.sp,
-                                        modifier = modifier.padding(start = 12.dp)
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = modifier
-                                            .fillMaxSize()
-                                    ) {
-                                        Text(
-                                            text = "Recipient",
-                                            color = Color.DarkGray,
-                                            fontSize = 8.sp,
-                                            modifier = modifier
-                                                .padding(top = 8.dp, start = 12.dp)
-                                                .align(Alignment.TopStart)
-                                                .border(width = 1.dp, color = Color.Black)
-                                        )
+                                Row(
+                                    modifier = modifier
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (emailState.recipient.isBlank()) {
                                         Box(
                                             modifier = modifier
-                                                .padding(start = 12.dp)
-                                                .align(Alignment.CenterStart)
-                                                .border(width = 1.dp, color = Color.Black)
+                                                .fillMaxSize()
                                         ) {
-                                            innerField()
+                                            Text(
+                                                text = "Recipient",
+                                                color = Color.DarkGray,
+                                                fontSize = 12.sp,
+                                                modifier = modifier
+                                                    .padding(start = 12.dp)
+                                                    .align(Alignment.CenterStart)
+                                            )
+                                        }
+                                    } else {
+                                        Box(
+                                            modifier = modifier.fillMaxSize()
+                                        ) {
+                                            Text(
+                                                text = "Recipient",
+                                                color = Color.DarkGray,
+                                                fontSize = 8.sp,
+                                                modifier = modifier
+                                                    .padding(top = 8.dp, start = 12.dp)
+                                                    .align(Alignment.TopStart)
+                                            )
+                                            Box(
+                                                modifier = modifier
+                                                    .padding(start = 12.dp)
+                                                    .align(Alignment.CenterStart)
+                                            ) {
+                                                innerField()
+                                            }
+                                            Box(
+                                                modifier = modifier
+                                                    .padding(end = 12.dp)
+                                                    .align(Alignment.CenterEnd)
+                                                    .clickable {
+                                                        addRecipient(emailState.recipient)
+                                                    }
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Add,
+                                                    contentDescription = "add recipient"
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -248,6 +293,7 @@ fun EmailScreen(
                             .height(56.dp)
                             .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp)),
                         keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Done
                         )
                     )
@@ -268,15 +314,42 @@ fun EmailScreen(
                                     .fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (emailState.subject.isBlank()) {
-                                    Text(
-                                        text = "Subject",
-                                        color = Color.DarkGray,
-                                        fontSize = 12.sp,
-                                        modifier = modifier.padding(start = 12.dp)
-                                    )
-                                } else {
-                                    innerField()
+                                Row(
+                                    modifier = modifier
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (emailState.subject.isBlank()) {
+                                        Text(
+                                            text = "Subject",
+                                            color = Color.DarkGray,
+                                            fontSize = 12.sp,
+                                            modifier = modifier.padding(start = 12.dp)
+                                        )
+                                    } else {
+                                        Box(
+                                            modifier = modifier
+                                                .fillMaxSize()
+                                        ) {
+                                            Text(
+                                                text = "Subject",
+                                                color = Color.DarkGray,
+                                                fontSize = 8.sp,
+                                                modifier = modifier
+                                                    .padding(top = 8.dp, start = 12.dp)
+                                                    .align(Alignment.TopStart)
+//                                                    .border(width = 1.dp, color = Color.Black)
+                                            )
+                                            Box(
+                                                modifier = modifier
+                                                    .padding(start = 12.dp)
+                                                    .align(Alignment.CenterStart)
+//                                                    .border(width = 1.dp, color = Color.Black)
+                                            ) {
+                                                innerField()
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         },
@@ -285,6 +358,7 @@ fun EmailScreen(
                             .height(56.dp)
                             .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp)),
                         keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         )
                     )
@@ -313,7 +387,28 @@ fun EmailScreen(
                                         modifier = modifier.padding(start = 12.dp)
                                     )
                                 } else {
-                                    innerField()
+                                    Box(
+                                        modifier = modifier
+                                            .fillMaxSize()
+                                    ) {
+                                        Text(
+                                            text = "Content",
+                                            color = Color.DarkGray,
+                                            fontSize = 8.sp,
+                                            modifier = modifier
+                                                .padding(top = 8.dp, start = 12.dp)
+                                                .align(Alignment.TopStart)
+//                                                .border(width = 1.dp, color = Color.Black)
+                                        )
+                                        Box(
+                                            modifier = modifier
+                                                .padding(start = 12.dp)
+                                                .align(Alignment.CenterStart)
+//                                                .border(width = 1.dp, color = Color.Black)
+                                        ) {
+                                            innerField()
+                                        }
+                                    }
                                 }
                             }
                         },
@@ -322,13 +417,14 @@ fun EmailScreen(
                             .height(56.dp)
                             .background(color = Color.LightGray, shape = RoundedCornerShape(24.dp)),
                         keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         )
                     )
 
                     Button(
                         onClick = {
-
+                                  emailEvent(EmailEvent.SUBMIT)
                         },
                         modifier = modifier
                             .fillMaxWidth()
@@ -368,13 +464,17 @@ fun EmailScreen(
                 ProgressBar(isLoading = emailState.isLoading)
 
                 if (emailState.status) {
-                    KottieAnimation(
-                        composition = composition,
-                        progress = { animationState.progress },
-                        modifier = modifier
-                            .fillMaxSize(),
-                        backgroundColor = MaterialTheme.colors.onSurfaceVariant
-                    )
+                    Box(
+                        modifier = modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        KottieAnimation(
+                            composition = composition,
+                            progress = { animationState.progress },
+                            modifier = modifier
+                                .size(140.dp)
+                        )
+                    }
                 }
 
             }
@@ -392,7 +492,8 @@ fun EmailScreen(
                 title = {
                     Text(
                         text = "Generate Email Template",
-                        fontSize = 14.sp
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center
                     )
                 },
                 negativeButton = {
@@ -459,53 +560,67 @@ fun EmailScreen(
                     when {
                         emailState.recipientsError.isNotBlank() -> {
                             Text(
-                                text = emailState.recipientsError
+                                text = emailState.recipientsError,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         emailState.subjectError.isNotBlank() -> {
                             Text(
-                                text = emailState.subjectError
+                                text = emailState.subjectError,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         emailState.contentError.isNotBlank() -> {
                             Text(
-                                text = emailState.contentError
+                                text = emailState.contentError,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         geminiState.promptError.isNotBlank() -> {
                             Text(
-                                text = geminiState.promptError
+                                text = geminiState.promptError,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         geminiState.error.isNotBlank() -> {
                             Text(
-                                text = geminiState.error
+                                text = geminiState.error,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
                 },
                 negativeButton = {},
                 positiveButton = {
-                    Button(
-                        onClick = {
-                            emailEvent(EmailEvent.CLEAR_ERROR_MESSAGES)
-                            enableErrorMessagePopUp = false
+                    Box(
+                        modifier = modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Button(
+                            onClick = {
+                                emailEvent(EmailEvent.CLEAR_ERROR_MESSAGES)
+                                enableErrorMessagePopUp = false
+                            }
+                        ) {
+                            Text(
+                                text = "OK",
+                                fontSize = 12.sp
+                            )
                         }
-                    ) {
-                        Text(
-                            text = "OK"
-                        )
                     }
                 },
                 modifier = modifier
-                    .padding(start = 24.dp, end = 24.dp)
-                    .height(240.dp)
-                    .background(MaterialTheme.colors.onSurfaceVariant, RoundedCornerShape(24.dp)),
-                contentColor = Color.Black
+                    .clip(RoundedCornerShape(24.dp)),
+                backgroundColor = MaterialTheme.colors.onSurface
             )
         }
     }

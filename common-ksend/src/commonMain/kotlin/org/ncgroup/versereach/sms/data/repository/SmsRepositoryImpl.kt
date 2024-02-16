@@ -2,6 +2,7 @@ package org.ncgroup.versereach.sms.data.repository
 
 
 
+//import VerseReach.common_ksend.BuildConfig
 import VerseReach.common_ksend.BuildConfig
 import org.ncgroup.versereach.utils.ResultState
 import kotlinx.coroutines.channels.awaitClose
@@ -26,7 +27,7 @@ internal class SmsRepositoryImpl : SmsRepository {
                 val response = smsService.sendSMS(
                     accountSID =  BuildConfig.ACCOUNTSID,
                     authToken = BuildConfig.AUTHTOKEN,
-                    from = BuildConfig.SENDER_PHONE_NUMBER,
+                    from = BuildConfig.SENDER_EMAIL_ADDRESS,
                     recipient = recipient,
                     body = body
                 )

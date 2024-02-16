@@ -40,8 +40,7 @@ fun ProgressBar(
                 composition = composition,
                 progress = { animationState.progress },
                 modifier = Modifier
-                    .size(200.dp),
-                backgroundColor = MaterialTheme.colors.onSurfaceVariant
+                    .size(140.dp)
             )
 
         }
