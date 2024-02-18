@@ -63,32 +63,7 @@ val properties = Properties().apply {
 buildConfig {
     buildConfigField(
         type = "String",
-        name = "API_KEY",
-        value = "\"${properties.getProperty("API_KEY")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "ACCOUNTSID",
-        value = "\"${properties.getProperty("ACCOUNTSID")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "AUTHTOKEN",
-        value = "\"${properties.getProperty("AUTHTOKEN")}\""
-    )
-    buildConfigField(
-        type = "String",
         name = "SENDER_EMAIL_ADDRESS",
         value = "\"${properties.getProperty("SENDER_EMAIL_ADDRESS")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "SENDER_PHONE_NUMBER",
-        value = "\"${properties.getProperty("SENDER_PHONE_NUMBER")}\""
-    )
-    buildConfigField(
-        type = "String",
-        name = "GEMINI_API_KEY",
-        value = "\"${properties.getProperty("GEMINI_API_KEY")}\""
     )
 }

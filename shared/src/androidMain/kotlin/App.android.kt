@@ -11,4 +11,6 @@ actual fun getPlatformName(): String {
 fun MainView() = App()
 
 actual fun openUrl(url: String?) {
+
 }
+

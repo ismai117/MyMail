@@ -2,8 +2,10 @@ package org.ncgroup.versereach.sms
 
 
 import KottieAnimation
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,11 +13,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Speaker
+import androidx.compose.material.icons.filled.SpeakerNotes
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -59,13 +66,13 @@ fun SmsScreen(
     navigator: Navigator
 ) {
 
-    val smsViewModel = viewModel(SmsViewModel::class){
+    val smsViewModel = viewModel(SmsViewModel::class) {
         SmsViewModel(smsRepository = SmsModule.smsRepository)
     }
 
     val smsState = smsViewModel.state
 
-    val geminiViewModel = viewModel(GeminiViewModel::class){
+    val geminiViewModel = viewModel(GeminiViewModel::class) {
         GeminiViewModel()
     }
 

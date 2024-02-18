@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import org.ncgroup.versereach.MainView
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
