@@ -47,13 +47,13 @@ dependencies {
     implementation(libs.horologist.compose.material)
     implementation(libs.horologist.compose.layout)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation(libs.precompose.navigation)
-    implementation(libs.precompose.viewmodel)
+    implementation(libs.voyagerNavigation)
+    implementation(libs.voyagerScreenModel)
     implementation(libs.kottie)
     implementation(libs.generativeai)
     implementation(project(":shared"))
-    implementation(project(":common-ksend"))
-    implementation(project(":common-gemini"))
+    implementation(project(":ksend"))
+    implementation(project(":gemini"))
 }
 
 val properties = Properties().apply {

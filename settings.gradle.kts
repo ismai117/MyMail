@@ -5,8 +5,8 @@ include(":desktopApp")
 include(":webApp")
 include(":webApp-wasm")
 include(":wearApp")
-include(":common-ksend")
-include(":common-gemini")
+include(":ksend")
+include(":gemini")
 
 pluginManagement {
     repositories {

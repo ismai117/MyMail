@@ -20,12 +20,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,49 +48,91 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import animateKottieCompositionAsState
+import cafe.adriel.voyager.core.model.rememberScreenModel
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.ncgroup.versereach.gemini.GeminiEvent
-import com.ncgroup.versereach.gemini.GeminiViewModel
+import com.ncgroup.versereach.gemini.GeminiScreenModel
+import com.ncgroup.versereach.gemini.GeminiState
+import kottieComposition.KottieCompositionSpec
+import kottieComposition.animateKottieCompositionAsState
+import kottieComposition.rememberKottieComposition
 import org.ncgroup.versereach.email.di.EmailModule
-import moe.tlaster.precompose.navigation.Navigator
-import moe.tlaster.precompose.viewmodel.viewModel
 import org.ncgroup.versereach.email.presentation.EmailEvent
-import org.ncgroup.versereach.email.presentation.EmailViewModel
-import org.ncgroup.versereach.sharedComponents.BottomBar
+import org.ncgroup.versereach.email.presentation.EmailScreenModel
+import org.ncgroup.versereach.email.presentation.EmailState
 import org.ncgroup.versereach.sharedComponents.ProgressBar
 import org.ncgroup.versereach.sharedComponents.TopBar
-import rememberKottieComposition
 
 
 // 7599946274
 
-@OptIn(
-    ExperimentalLayoutApi::class,
-    ExperimentalComposeUiApi::class
-)
+
+object EmailScreen : Tab {
+
+    override val options: TabOptions
+    @Composable
+    get() {
+        val title = "EMAIL"
+        val icon = rememberVectorPainter(image = Icons.Default.Email)
+        return remember {
+            TabOptions(
+                index = 0u,
+                title = title,
+                icon = icon
+            )
+        }
+    }
+
+    @Composable
+    override fun Content() {
+
+        val emailScreenModel = rememberScreenModel {  EmailScreenModel(emailRepository = EmailModule.emailRepository) }
+        val emailState =  emailScreenModel.state
+
+        val geminiScreenModel = rememberScreenModel { GeminiScreenModel() }
+        val geminiState = geminiScreenModel.state
+
+        EmailScreenContent(
+            emailState = emailState,
+            emailOnEvent = {
+                emailScreenModel.onEvent(it)
+            },
+            recipients = emailScreenModel.recipients,
+            addRecipient = {
+                 emailScreenModel.addRecipient(it)
+            },
+            geminiState = geminiState,
+            geminiOnEvent = {
+                geminiScreenModel.onEvent(it)
+            }
+        )
+
+    }
+
+}
+
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 @Composable
-fun EmailScreen(
+fun EmailScreenContent(
     modifier: Modifier = Modifier,
-    navigator: Navigator
+    emailState: EmailState,
+    emailOnEvent: (EmailEvent) -> Unit,
+    recipients: List<String>,
+    addRecipient: (String) -> Unit,
+    geminiState: GeminiState,
+    geminiOnEvent:  (GeminiEvent) -> Unit
 ) {
 
-    val emailViewModel = viewModel(EmailViewModel::class) {
-        EmailViewModel(emailRepository = EmailModule.emailRepository)
-    }
 
-    val emailState = emailViewModel.state
-
-    val geminiViewModel = viewModel(GeminiViewModel::class){
-        GeminiViewModel()
-    }
-
-    val geminiState = geminiViewModel.state
 
     val composition = rememberKottieComposition(
         spec = KottieCompositionSpec.Url("https://lottie.host/dd09ef53-b150-4c81-a3e1-b5516e940c31/GY604Ofcp4.json")
@@ -145,7 +189,7 @@ fun EmailScreen(
 
             geminiState.status -> {
                 geminiEnabled = false
-                emailViewModel.onEvent(EmailEvent.CONTENT(geminiState.response))
+                emailOnEvent(EmailEvent.CONTENT(geminiState.response))
             }
 
             geminiState.error.isNotBlank() -> {
@@ -175,14 +219,14 @@ fun EmailScreen(
             )
         },
         bottomBar = {
-            BottomBar(
-                navigator = navigator
-            )
+//            BottomBar(
+//                navigator = navigator
+//            )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    emailViewModel.onEvent(EmailEvent.SUBMIT)
+                    emailOnEvent(EmailEvent.SUBMIT)
                 },
                 modifier = modifier
                     .padding(bottom = 24.dp)
@@ -253,7 +297,7 @@ fun EmailScreen(
 
                         }
 
-                        Divider(
+                        HorizontalDivider(
                             modifier = modifier.fillMaxWidth(),
                             thickness = 3.dp,
                             color = DividerDefaults.color
@@ -293,7 +337,7 @@ fun EmailScreen(
                                 TextField(
                                     value = emailState.recipient,
                                     onValueChange = {
-                                        emailViewModel.onEvent(EmailEvent.RECIPIENT(it))
+                                        emailOnEvent(EmailEvent.RECIPIENT(it))
                                     },
                                     modifier = modifier
                                         .fillMaxWidth()
@@ -302,7 +346,7 @@ fun EmailScreen(
                                         IconButton(
                                             onClick = {
                                                 if (emailState.recipient.isNotBlank()) {
-                                                    emailViewModel.addRecipient(emailState.recipient)
+                                                    addRecipient(emailState.recipient)
                                                 }
                                             },
                                             enabled = emailState.recipient.isNotBlank()
@@ -331,7 +375,7 @@ fun EmailScreen(
                                         .fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    emailViewModel.recipients
+                                    recipients
                                         .forEach {
                                             SuggestionChip(
                                                 onClick = {},
@@ -349,7 +393,7 @@ fun EmailScreen(
 
                     }
 
-                    Divider(
+                    HorizontalDivider(
                         modifier = modifier.fillMaxWidth(),
                         thickness = 3.dp
                     )
@@ -357,7 +401,7 @@ fun EmailScreen(
                     TextField(
                         value = emailState.subject,
                         onValueChange = {
-                            emailViewModel.onEvent(EmailEvent.SUBJECT(it))
+                            emailOnEvent(EmailEvent.SUBJECT(it))
                         },
                         modifier = modifier
                             .fillMaxWidth()
@@ -379,7 +423,7 @@ fun EmailScreen(
                         )
                     )
 
-                    Divider(
+                    HorizontalDivider(
                         modifier = modifier.fillMaxWidth(),
                         thickness = 3.dp
                     )
@@ -387,7 +431,7 @@ fun EmailScreen(
                     TextField(
                         value = emailState.content,
                         onValueChange = {
-                            emailViewModel.onEvent(EmailEvent.CONTENT(it))
+                            emailOnEvent(EmailEvent.CONTENT(it))
                         },
                         modifier = modifier
                             .fillMaxWidth()
@@ -454,7 +498,7 @@ fun EmailScreen(
                     TextField(
                         value = geminiState.prompt,
                         onValueChange = {
-                            geminiViewModel.onEvent(
+                            geminiOnEvent(
                                 GeminiEvent.PROMPT(it)
                             )
                         },
@@ -490,9 +534,7 @@ fun EmailScreen(
                 confirmButton = {
                     Button(
                         onClick = {
-                            geminiViewModel.onEvent(
-                                GeminiEvent.SUBMIT
-                            )
+                            geminiOnEvent(GeminiEvent.SUBMIT)
                         }
                     ) {
                         Text(
@@ -511,8 +553,8 @@ fun EmailScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        geminiViewModel.clearErrorMessage()
-                        emailViewModel.onEvent(EmailEvent.CLEAR_ERROR_MESSAGES)
+                        geminiOnEvent(GeminiEvent.CLEAR_MESSAGE)
+                        emailOnEvent(EmailEvent.CLEAR_ERROR_MESSAGES)
                         enableErrorMessagePopUp = false
                     }
                 ) {
@@ -563,9 +605,8 @@ fun EmailScreen(
         }
         if (animationState.isCompleted) {
             println("Animation Completed")
-            emailViewModel.onEvent(EmailEvent.RESET_UI_STATE)
+            emailOnEvent(EmailEvent.RESET_UI_STATE)
         }
     }
 
 }
-

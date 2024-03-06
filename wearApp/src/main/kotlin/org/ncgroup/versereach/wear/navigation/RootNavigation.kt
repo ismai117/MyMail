@@ -1,15 +1,15 @@
 package org.ncgroup.versereach.wear.navigation
 
 import androidx.compose.runtime.Composable
-import com.ncgroup.versereach.gemini.GeminiViewModel
+import com.ncgroup.versereach.gemini.GeminiScreenModel
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import moe.tlaster.precompose.viewmodel.viewModel
 import org.ncgroup.versereach.email.di.EmailModule
-import org.ncgroup.versereach.email.presentation.EmailViewModel
+import org.ncgroup.versereach.email.presentation.EmailScreenModel
 import org.ncgroup.versereach.sms.di.SmsModule
-import org.ncgroup.versereach.sms.presentation.SmsViewModel
+import org.ncgroup.versereach.sms.presentation.SmsScreenModel
 import org.ncgroup.versereach.splash.SplashScreen
 import org.ncgroup.versereach.wear.email.EmailScreen
 import org.ncgroup.versereach.wear.sms.SmsScreen
@@ -26,16 +26,16 @@ fun RootNavigation(
     navigator: Navigator
 ){
 
-    val emailViewModel = viewModel(EmailViewModel::class) {
-        EmailViewModel(emailRepository = EmailModule.emailRepository)
+    val emailViewModel = viewModel(EmailScreenModel::class) {
+        EmailScreenModel(emailRepository = EmailModule.emailRepository)
     }
 
-    val smsViewModel = viewModel(SmsViewModel::class) {
-        SmsViewModel(smsRepository = SmsModule.smsRepository)
+    val smsViewModel = viewModel(SmsScreenModel::class) {
+        SmsScreenModel(smsRepository = SmsModule.smsRepository)
     }
 
-    val geminiViewModel = viewModel(GeminiViewModel::class){
-        GeminiViewModel()
+    val geminiViewModel = viewModel(GeminiScreenModel::class){
+        GeminiScreenModel()
     }
 
     NavHost(

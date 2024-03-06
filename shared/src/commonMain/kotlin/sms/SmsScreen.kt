@@ -2,10 +2,8 @@ package org.ncgroup.versereach.sms
 
 
 import KottieAnimation
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,15 +12,14 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Speaker
-import androidx.compose.material.icons.filled.SpeakerNotes
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,43 +37,87 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import animateKottieCompositionAsState
+import cafe.adriel.voyager.core.model.rememberScreenModel
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.ncgroup.versereach.gemini.GeminiEvent
-import com.ncgroup.versereach.gemini.GeminiViewModel
-import moe.tlaster.precompose.navigation.Navigator
-import moe.tlaster.precompose.viewmodel.viewModel
-import org.ncgroup.versereach.sharedComponents.BottomBar
+import com.ncgroup.versereach.gemini.GeminiScreenModel
+import com.ncgroup.versereach.gemini.GeminiState
+import kottieComposition.KottieCompositionSpec
+import kottieComposition.animateKottieCompositionAsState
+import kottieComposition.rememberKottieComposition
 import org.ncgroup.versereach.sharedComponents.ProgressBar
 import org.ncgroup.versereach.sharedComponents.TopBar
 import org.ncgroup.versereach.sms.di.SmsModule
 import org.ncgroup.versereach.sms.presentation.SmsEvent
-import org.ncgroup.versereach.sms.presentation.SmsViewModel
-import rememberKottieComposition
+import org.ncgroup.versereach.sms.presentation.SmsScreenModel
+import org.ncgroup.versereach.sms.presentation.SmsState
 
+
+
+object SmsScreen : Tab {
+
+    override val options: TabOptions
+        @Composable
+        get() {
+            val title = "SMS"
+            val icon = rememberVectorPainter(image = Icons.Default.Sms)
+            return remember {
+                TabOptions(
+                    index = 1u,
+                    title = title,
+                    icon = icon
+                )
+            }
+        }
+
+    @Composable
+    override fun Content() {
+
+        val smsScreenModel = rememberScreenModel {
+            SmsScreenModel(smsRepository = SmsModule.smsRepository)
+        }
+
+        val smsState = smsScreenModel.state
+
+        val geminiScreenModel = rememberScreenModel {
+            GeminiScreenModel()
+        }
+
+        val geminiState = geminiScreenModel.state
+
+        SmsScreenContent(
+            smsState = smsState,
+            smsOnEvent = {
+                smsScreenModel.onEvent(it)
+            },
+            geminiState = geminiState,
+            geminiOnEvent = {
+                geminiScreenModel.onEvent(it)
+            }
+        )
+
+    }
+
+}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SmsScreen(
+fun SmsScreenContent(
     modifier: Modifier = Modifier,
-    navigator: Navigator
+    smsState: SmsState,
+    smsOnEvent: (SmsEvent) -> Unit,
+    geminiState: GeminiState,
+    geminiOnEvent:  (GeminiEvent) -> Unit
 ) {
 
-    val smsViewModel = viewModel(SmsViewModel::class) {
-        SmsViewModel(smsRepository = SmsModule.smsRepository)
-    }
-
-    val smsState = smsViewModel.state
-
-    val geminiViewModel = viewModel(GeminiViewModel::class) {
-        GeminiViewModel()
-    }
-
-    val geminiState = geminiViewModel.state
 
     val composition = rememberKottieComposition(
         spec = KottieCompositionSpec.Url("https://lottie.host/dd09ef53-b150-4c81-a3e1-b5516e940c31/GY604Ofcp4.json")
@@ -128,7 +169,7 @@ fun SmsScreen(
 
             geminiState.status -> {
                 geminiEnabled = false
-                smsViewModel.onEvent(SmsEvent.BODY(geminiState.response))
+                smsOnEvent(SmsEvent.BODY(geminiState.response))
             }
 
             geminiState.error.isNotBlank() -> {
@@ -158,14 +199,14 @@ fun SmsScreen(
             )
         },
         bottomBar = {
-            BottomBar(
-                navigator = navigator
-            )
+//            BottomBar(
+//                navigator = navigator
+//            )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    smsViewModel.onEvent(SmsEvent.SUBMIT)
+                    smsOnEvent(SmsEvent.SUBMIT)
                 },
                 modifier = modifier
                     .width(70.dp)
@@ -191,7 +232,7 @@ fun SmsScreen(
                     TextField(
                         value = smsState.recipient,
                         onValueChange = {
-                            smsViewModel.onEvent(SmsEvent.RECIPIENT(it))
+                            smsOnEvent(SmsEvent.RECIPIENT(it))
                         },
                         modifier = modifier
                             .fillMaxWidth()
@@ -213,7 +254,7 @@ fun SmsScreen(
                         )
                     )
 
-                    Divider(
+                    HorizontalDivider(
                         modifier = modifier.fillMaxWidth(),
                         thickness = 3.dp
                     )
@@ -221,7 +262,7 @@ fun SmsScreen(
                     TextField(
                         value = smsState.body,
                         onValueChange = {
-                            smsViewModel.onEvent(SmsEvent.BODY(it))
+                            smsOnEvent(SmsEvent.BODY(it))
                         },
                         modifier = modifier
                             .fillMaxWidth()
@@ -287,7 +328,7 @@ fun SmsScreen(
                     TextField(
                         value = geminiState.prompt,
                         onValueChange = {
-                            geminiViewModel.onEvent(
+                            geminiOnEvent(
                                 GeminiEvent.PROMPT(it)
                             )
                         },
@@ -323,7 +364,7 @@ fun SmsScreen(
                 confirmButton = {
                     Button(
                         onClick = {
-                            geminiViewModel.onEvent(
+                            geminiOnEvent(
                                 GeminiEvent.SUBMIT
                             )
                         }
@@ -344,8 +385,8 @@ fun SmsScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        geminiViewModel.clearErrorMessage()
-                        smsViewModel.onEvent(SmsEvent.CLEAR_ERROR_MESSAGES)
+                        geminiOnEvent(GeminiEvent.CLEAR_MESSAGE)
+                        smsOnEvent(SmsEvent.CLEAR_ERROR_MESSAGES)
                         enableErrorMessagePopUp = false
                     }
                 ) {
@@ -392,7 +433,7 @@ fun SmsScreen(
         }
         if (animationState.isCompleted) {
             println("Animation Completed")
-            smsViewModel.onEvent(SmsEvent.RESET_UI_STATE)
+            smsOnEvent(SmsEvent.RESET_UI_STATE)
         }
     }
 

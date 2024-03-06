@@ -37,8 +37,12 @@ kotlin {
         summary = "Some description for the Shared Module"
         homepage = "Link to the Shared Module homepage"
         version = "1.0"
-        ios.deploymentTarget = "17.0"
+        ios.deploymentTarget = "14.1"
         podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "shared"
+            isStatic = true
+        }
         pod("lottie-ios") {
             version = "4.4.0"
             linkOnly = true
@@ -61,12 +65,11 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.napier)
-            implementation(libs.precompose.navigation)
-            implementation(libs.precompose.viewmodel)
+            implementation(libs.bundles.common.voyager)
             implementation(libs.kottie)
 
-            implementation(project(":common-ksend"))
-            implementation(project(":common-gemini"))
+            implementation(project(":ksend"))
+            implementation(project(":gemini"))
 
         }
 

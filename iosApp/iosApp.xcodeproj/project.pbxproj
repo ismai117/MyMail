@@ -115,8 +115,8 @@
 				7555FF77242A565900829871 /* Sources */,
 				7555FF79242A565900829871 /* Resources */,
 				F85CB1118929364A9C6EFABC /* Frameworks */,
-				BAE4FFF90AC18613924962A9 /* [CP] Embed Pods Frameworks */,
-				1768D958498A498918C70CA8 /* [CP] Copy Pods Resources */,
+				B88FFDDC0B3BF837F64760E4 /* [CP] Embed Pods Frameworks */,
+				7426C31FFC0E14305875CD9E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -191,7 +191,7 @@
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
-		1768D958498A498918C70CA8 /* [CP] Copy Pods Resources */ = {
+		7426C31FFC0E14305875CD9E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -208,7 +208,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BAE4FFF90AC18613924962A9 /* [CP] Embed Pods Frameworks */ = {
+		B88FFDDC0B3BF837F64760E4 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
